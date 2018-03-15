@@ -3,14 +3,15 @@ package controllers
 import (
 	"AiCompServer/app/db"
 	"AiCompServer/app/models"
+	"encoding/json"
 	"github.com/revel/revel"
 	"sort"
 )
 
 type Rank struct {
-	rank     int
-	username string
-	score    int
+	Rank     int    `json:"rank"`
+	Username string `json:"username"`
+	Score    int    `json:"score"`
 }
 
 type Ranks []Rank
@@ -36,12 +37,13 @@ func (c ApiChallenge) Ranking() revel.Result {
 		for _, ans := range answer {
 			score = score + ans.Score
 		}
-		rank = append(rank, Rank{rank: 0, username: user.Username, score: score})
+		rank = append(rank, Rank{Rank: 0, Username: user.Username, Score: score})
 	}
-	sort.Slice(rank, func(i, j int) bool { return rank[i].score > rank[j].score })
-	for index, r := range rank {
-		r.rank = index
+	sort.Slice(rank, func(i, j int) bool { return rank[i].Score > rank[j].Score })
+	for index, _ := range rank {
+		rank[index].Rank = index + 1
 	}
-	r := Response{rank}
+	jrank, _ := json.Marshal(rank)
+	r := Response{string(jrank)}
 	return c.RenderJSON(r)
 }

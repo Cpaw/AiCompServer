@@ -5,7 +5,6 @@ import (
 	"AiCompServer/app/models"
 	"github.com/revel/revel"
 	"gopkg.in/validator.v2"
-	"log"
 )
 
 type ApiChallenge struct {
