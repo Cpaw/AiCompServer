@@ -24,7 +24,7 @@ type Auth struct {
 func TokenGenerator(len int) string {
 	b := make([]byte, len)
 	rand.Read(b)
-	return fmt.Sprintf("token %x", b)
+	return fmt.Sprintf("%x", b)
 }
 
 type ApiAuth struct {
