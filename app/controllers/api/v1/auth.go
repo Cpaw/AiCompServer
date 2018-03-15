@@ -48,8 +48,7 @@ func (c ApiAuth) SignIn() revel.Result {
 	log.Print("&&", session, "&&")
 	var res string
 	if err := cache.Get("session_"+session, &res); err != nil {
-		r := Response{"Session Timeout"}
-		return c.RenderJSON(r)
+		return c.HandleBadRequestError("Session Timeout")
 	}
 	go cache.Delete("session_" + session)
 
@@ -148,8 +147,7 @@ func CheckToken(c ApiV1Controller) revel.Result {
 	// Check Token Timeout
 	var res string
 	if err := cache.Get("auth_"+token, &res); err != nil {
-		r := Response{"Session Timeout"}
-		return c.RenderJSON(r)
+		return c.HandleBadRequestError("Session Timeout")
 	}
 	go cache.Set("auth_"+user.Token, user.Username, 30*time.Minute)
 	return nil
