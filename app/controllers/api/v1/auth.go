@@ -24,7 +24,7 @@ type Auth struct {
 func TokenGenerator(len int) string {
 	b := make([]byte, len)
 	rand.Read(b)
-	return fmt.Sprintf("%x", b)
+	return fmt.Sprintf("token %x", b)
 }
 
 type ApiAuth struct {
@@ -34,14 +34,14 @@ type ApiAuth struct {
 func (c ApiAuth) GetSessionID() revel.Result {
 	session := TokenGenerator(32)
 	go cache.Set("session_"+session, session, 2*time.Minute)
-	c.Response.Out.Header().Add("authentication", session)
+	c.Response.Out.Header().Add("Authorization", session)
 	r := Response{"Get Session ID"}
 	log.Print("&&", session, "&&")
 	return c.RenderJSON(r)
 }
 
 func (c ApiAuth) SignIn() revel.Result {
-	session := c.Request.Header.Get("authentication")
+	session := c.Request.Header.Get("Authorization")
 	if session == "" {
 		return c.HandleNotFoundError("Retry Session")
 	}
@@ -83,12 +83,12 @@ func (c ApiAuth) SignIn() revel.Result {
 	}
 	r := Response{userNew.Token}
 	go cache.Set("auth_"+userNew.Token, userNew.Username, 30*time.Minute)
-	c.Response.Out.Header().Add("authentication", userNew.Token)
+	c.Response.Out.Header().Add("Authorization", userNew.Token)
 	return c.RenderJSON(r)
 }
 
 func (c ApiAuth) SignOut() revel.Result {
-	token := c.Request.Header.Get("authentication")
+	token := c.Request.Header.Get("Authorization")
 	if token == "" {
 		return c.HandleNotFoundError("Not SignIn")
 	}
@@ -105,7 +105,7 @@ func (c ApiAuth) SignOut() revel.Result {
 }
 
 func (c ApiAuth) Role() revel.Result {
-	token := c.Request.Header.Get("authentication")
+	token := c.Request.Header.Get("Authorization")
 	if token == "" {
 		return c.HandleNotFoundError("Not SignIn")
 	}
@@ -119,7 +119,7 @@ func (c ApiAuth) Role() revel.Result {
 
 func CheckRole(c ApiV1Controller, AllowRole []string) revel.Result {
 	log.Print("CheckRole")
-	token := c.Request.Header.Get("authentication")
+	token := c.Request.Header.Get("Authorization")
 	if token == "" {
 		return c.HandleNotFoundError("Not SignIn")
 	}
@@ -138,7 +138,7 @@ func CheckRole(c ApiV1Controller, AllowRole []string) revel.Result {
 
 func CheckToken(c ApiV1Controller) revel.Result {
 	log.Print("CheckToken")
-	token := c.Request.Header.Get("authentication")
+	token := c.Request.Header.Get("Authorization")
 	if token == "" {
 		return c.HandleNotFoundError("Not SignIn")
 	}
