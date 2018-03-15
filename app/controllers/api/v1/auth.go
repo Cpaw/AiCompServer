@@ -124,7 +124,7 @@ func CheckRole(c ApiV1Controller, AllowRole []string) revel.Result {
 	}
 	user := &models.User{}
 	if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
-		return c.HandleNotFoundError(err.Error())
+		return c.HandleNotFoundError("This token does not exist")
 	}
 	for _, role := range AllowRole {
 		if role == user.Role || role == strconv.FormatUint(user.ID, 10) {
@@ -143,7 +143,7 @@ func CheckToken(c ApiV1Controller) revel.Result {
 	}
 	user := &models.User{}
 	if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
-		return c.HandleNotFoundError(err.Error())
+		return c.HandleNotFoundError("This token does not exist")
 	}
 	// Check Token Timeout
 	var res string
