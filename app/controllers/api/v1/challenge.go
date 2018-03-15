@@ -44,15 +44,12 @@ func (c ApiChallenge) Create() revel.Result {
 		return err
 	}
 	challenge := &models.Challenge{}
-	log.Println("test1")
 	if err := c.BindParams(challenge); err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
-	log.Println("test1")
 	if err := validator.Validate(challenge); err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
-	log.Println("test1")
 	if err := db.DB.Create(challenge).Error; err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
