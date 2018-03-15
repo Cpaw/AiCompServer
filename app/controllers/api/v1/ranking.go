@@ -8,8 +8,9 @@ import (
 )
 
 type Rank struct {
-	Username string
-	Score    int
+	rank     int
+	username string
+	score    int
 }
 
 type Ranks []Rank
@@ -25,6 +26,9 @@ func (c ApiChallenge) Ranking() revel.Result {
 	answer := []models.Answer{}
 	var rank Ranks
 	for _, user := range users {
+		if user.Role == "admin" {
+			continue
+		}
 		score := 0
 		if err := db.DB.Find(&answer, "user_id = ?", user.ID).Error; err != nil {
 			return c.HandleNotFoundError(err.Error())
@@ -32,9 +36,12 @@ func (c ApiChallenge) Ranking() revel.Result {
 		for _, ans := range answer {
 			score = score + ans.Score
 		}
-		rank = append(rank, Rank{Username: user.Username, Score: score})
+		rank = append(rank, Rank{rank: 0, username: user.Username, score: score})
 	}
-	sort.Slice(rank, func(i, j int) bool { return rank[i].Score > rank[j].Score })
+	sort.Slice(rank, func(i, j int) bool { return rank[i].score > rank[j].score })
+	for index, r := range rank {
+		r.rank = index
+	}
 	r := Response{rank}
 	return c.RenderJSON(r)
 }
