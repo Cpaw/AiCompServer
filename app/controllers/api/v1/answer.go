@@ -3,8 +3,13 @@ package controllers
 import (
 	"AiCompServer/app/db"
 	"AiCompServer/app/models"
+	"bufio"
 	"github.com/revel/revel"
 	"gopkg.in/validator.v2"
+	"log"
+	"os"
+	"strconv"
+	"strings"
 )
 
 type ApiAnswer struct {
@@ -50,7 +55,7 @@ func (c ApiAnswer) UserChallengeAnswer(id int) revel.Result {
 	if err := CheckToken(c.ApiV1Controller); err != nil {
 		return err
 	}
-	token := c.Request.Header.Get("authentication")
+	token := c.Request.Header.Get("Authorization")
 	user := &models.User{}
 	if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
@@ -75,7 +80,7 @@ func (c ApiAnswer) Create() revel.Result {
 	if err := c.BindParams(answer); err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
-	token := c.Request.Header.Get("authentication")
+	token := c.Request.Header.Get("Authorization")
 	user := &models.User{}
 	if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
@@ -83,7 +88,6 @@ func (c ApiAnswer) Create() revel.Result {
 	if err := validator.Validate(answer); err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
-
 	if err := db.DB.Create(answer).Error; err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
@@ -136,8 +140,86 @@ func (c ApiAnswer) Delete(id int) revel.Result {
 	return c.RenderJSON(r)
 }
 
-func (c ApiAnswer) Submit() revel.Result {
+func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
+	if err := CheckToken(c.ApiV1Controller); err != nil {
+		return err
+	}
+	var fp *os.File
+	ansFile := "./correct_ans_"
+	ansFile = ansFile + strconv.Itoa(int(ChallengeID)) + ".txt"
+	fp, err := os.Open(ansFile)
+	if err != nil {
+		return c.HandleBadRequestError(err.Error())
+	}
+	scanner1 := bufio.NewScanner(ansFP)
+	scanner2 := bufio.NewScanner(fp)
+	b1 := scanner1.Scan()
+	b2 := scanner2.Scan()
+	acc := 0
+	for b1 && b2 {
+		st1 := scanner1.Text()
+		st2 := scanner2.Text()
+		log.Println(st1)
+		log.Println(st2)
+		l1 := strings.Split(st1, ",")
+		l2 := strings.Split(st2, ",")
+		if len(l1) > 1 && len(l2) > 1 {
+			a1 := strings.Replace(l1[1], " ", "", -1)
+			a2 := strings.Replace(l2[1], " ", "", -1)
+			if a1 == a2 {
+				acc = acc + 1
+			}
+		}
+	}
+	if err := scanner1.Err(); err != nil {
+		return c.HandleBadRequestError(err.Error())
+	}
+	if err := scanner2.Err(); err != nil {
+		return c.HandleBadRequestError(err.Error())
+	}
+	// Submitしたユーザーを特定する
+	token := c.Request.Header.Get("Authorization")
+	user := &models.User{}
+	if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
+		return c.HandleNotFoundError(err.Error())
+	}
 	// まずはDBを探してあったらUpdate処理、なかったらCreate
+	// そのユーザーがSubmitした問題のanswerを探す
+	answer := &models.Answer{}
+	if err := db.DB.Where("user_id = ? AND challenge_id = ?", user.ID, ChallengeID).First(&answer).Error; err != nil {
+		// なかった場合のCreate
+		answer.ChallengeID = ChallengeID
+		answer.UserID = user.ID
+		answer.Score = acc
+		if err := c.BindParams(answer); err != nil {
+			return c.HandleBadRequestError(err.Error())
+		}
+		token := c.Request.Header.Get("Authorization")
+		user := &models.User{}
+		if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
+			return c.HandleNotFoundError(err.Error())
+		}
+		if err := validator.Validate(answer); err != nil {
+			return c.HandleBadRequestError(err.Error())
+		}
+		if err := db.DB.Create(answer).Error; err != nil {
+			return c.HandleBadRequestError(err.Error())
+		}
+	}
+	// そのユーザーがSubmitした問題のanswerを更新する
+	answerNew := &models.Answer{}
+	answerNew.ChallengeID = ChallengeID
+	answerNew.UserID = user.ID
+	answerNew.Score = acc
+	if err := c.BindParams(answerNew); err != nil {
+		return c.HandleBadRequestError(err.Error())
+	}
+	if err := validator.Validate(answerNew); err != nil {
+		return c.HandleBadRequestError(err.Error())
+	}
+	if err := db.DB.Model(&answer).Update(&answerNew).Error; err != nil {
+		return c.HandleNotFoundError(err.Error())
+	}
 	r := Response{"Success Submit"}
 	return c.RenderJSON(r)
 }
