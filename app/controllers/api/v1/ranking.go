@@ -16,6 +16,10 @@ type Rank struct {
 
 type Ranks []Rank
 
+type ResponseRanking struct {
+	Ranking Ranks `json:"ranking"`
+}
+
 func (c ApiChallenge) Ranking() revel.Result {
 	if err := CheckToken(c.ApiV1Controller); err != nil {
 		return err
@@ -43,7 +47,7 @@ func (c ApiChallenge) Ranking() revel.Result {
 	for index, _ := range rank {
 		rank[index].Rank = index + 1
 	}
-	jrank, _ := json.Marshal(rank)
+	jrank, _ := json.Marshal(ResponseRanking{rank})
 	r := Response{string(jrank)}
 	return c.RenderJSON(r)
 }
