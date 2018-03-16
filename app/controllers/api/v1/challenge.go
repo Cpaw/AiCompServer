@@ -11,6 +11,14 @@ type ApiChallenge struct {
 	ApiV1Controller
 }
 
+type ResponseChallenge struct {
+	Challenge *models.Challenge `json:"challenge"`
+}
+
+type ResponseChallenges struct {
+	Challenges []models.Challenge `json:"challenges"`
+}
+
 func (c ApiChallenge) Index() revel.Result {
 	if err := CheckToken(c.ApiV1Controller); err != nil {
 		return err
@@ -19,7 +27,7 @@ func (c ApiChallenge) Index() revel.Result {
 	if err := db.DB.Order("id desc").Find(&challenges).Error; err != nil {
 		return c.HandleNotFoundError("Record Find Failure")
 	}
-	r := Response{challenges}
+	r := Response{ResponseChallenges{challenges}}
 	return c.RenderJSON(r)
 }
 
@@ -31,7 +39,7 @@ func (c ApiChallenge) Show(id int) revel.Result {
 	if err := db.DB.First(&challenge, id).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
 	}
-	r := Response{challenge}
+	r := Response{ResponseChallenge{challenge}}
 	return c.RenderJSON(r)
 }
 
@@ -52,7 +60,7 @@ func (c ApiChallenge) Create() revel.Result {
 	if err := db.DB.Create(challenge).Error; err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
-	r := Response{challenge}
+	r := Response{ResponseChallenge{challenge}}
 	return c.RenderJSON(r)
 }
 
@@ -77,7 +85,7 @@ func (c ApiChallenge) Update(id int) revel.Result {
 	if err := db.DB.Model(&challengeOld).Update(&challengeNew).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
 	}
-	r := Response{challengeNew}
+	r := Response{ResponseChallenge{challengeNew}}
 	return c.RenderJSON(r)
 }
 

@@ -14,6 +14,14 @@ type ApiUser struct {
 	ApiV1Controller
 }
 
+type ReseposeUser struct {
+	User *models.User `json:"user"`
+}
+
+type ReseposeUsers struct {
+	Users []models.User `json:"users"`
+}
+
 /* User List
 JSON
  Request
@@ -53,7 +61,7 @@ func (c ApiUser) Index() revel.Result {
 	if err := db.DB.Order("id desc").Find(&users).Error; err != nil {
 		return c.HandleNotFoundError("Record Find Failure")
 	}
-	r := Response{users}
+	r := Response{ReseposeUsers{users}}
 	return c.RenderJSON(r)
 }
 
@@ -85,7 +93,7 @@ func (c ApiUser) Show(id int) revel.Result {
 	if err := db.DB.First(&user, id).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
 	}
-	r := Response{user}
+	r := Response{ReseposeUser{user}}
 	return c.RenderJSON(r)
 }
 
@@ -111,7 +119,7 @@ func (c ApiUser) Create() revel.Result {
 	if err := db.DB.Create(user).Error; err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
-	r := Response{user}
+	r := Response{ReseposeUser{user}}
 	return c.RenderJSON(r)
 }
 
@@ -142,7 +150,7 @@ func (c ApiUser) Update(id int) revel.Result {
 	if err := db.DB.Model(&userOld).Update(&userNew).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
 	}
-	r := Response{userNew}
+	r := Response{ReseposeUser{userNew}}
 	return c.RenderJSON(r)
 }
 

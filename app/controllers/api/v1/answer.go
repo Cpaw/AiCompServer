@@ -11,6 +11,14 @@ type ApiAnswer struct {
 	ApiV1Controller
 }
 
+type ResponseAnswer struct {
+	Answer *models.Answer `json:"answer"`
+}
+
+type ResponseAnswers struct {
+	Answers []models.Answer `json:"answers"`
+}
+
 // Answer Index
 func (c ApiAnswer) Index() revel.Result {
 	if err := CheckToken(c.ApiV1Controller); err != nil {
@@ -20,7 +28,7 @@ func (c ApiAnswer) Index() revel.Result {
 	if err := db.DB.Order("id desc").Find(&answers).Error; err != nil {
 		return c.HandleNotFoundError("Record Find Failure")
 	}
-	r := Response{answers}
+	r := Response{ResponseAnswers{answers}}
 	return c.RenderJSON(r)
 }
 
@@ -33,7 +41,7 @@ func (c ApiAnswer) Show(id int) revel.Result {
 	if err := db.DB.First(&answer, id).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
 	}
-	r := Response{answer}
+	r := Response{ResponseAnswer{answer}}
 	return c.RenderJSON(r)
 }
 
@@ -51,7 +59,7 @@ func (c ApiAnswer) UserChallengeAnswer(id int) revel.Result {
 	if err := db.DB.Where("user_id = ? AND challenge_id = ?", user.ID, id).First(&answer).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
 	}
-	r := Response{answer}
+	r := Response{ResponseAnswer{answer}}
 	return c.RenderJSON(r)
 }
 
@@ -79,7 +87,7 @@ func (c ApiAnswer) Create() revel.Result {
 	if err := db.DB.Create(answer).Error; err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
-	r := Response{answer}
+	r := Response{ResponseAnswer{answer}}
 	return c.RenderJSON(r)
 }
 
@@ -105,7 +113,7 @@ func (c ApiAnswer) Update(id int) revel.Result {
 	if err := db.DB.Model(&answerOld).Update(&answerNew).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
 	}
-	r := Response{answerNew}
+	r := Response{ResponseAnswer{answerNew}}
 	return c.RenderJSON(r)
 }
 
