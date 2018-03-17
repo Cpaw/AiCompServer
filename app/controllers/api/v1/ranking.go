@@ -3,7 +3,6 @@ package controllers
 import (
 	"AiCompServer/app/db"
 	"AiCompServer/app/models"
-	"encoding/json"
 	"github.com/revel/revel"
 	"sort"
 )
@@ -47,7 +46,6 @@ func (c ApiChallenge) Ranking() revel.Result {
 	for index, _ := range rank {
 		rank[index].Rank = index + 1
 	}
-	jrank, _ := json.Marshal(ResponseRanking{rank})
-	r := Response{string(jrank)}
+	r := Response{ResponseRanking{rank}}
 	return c.RenderJSON(r)
 }
