@@ -112,11 +112,11 @@ func (c ApiAuth) Role() revel.Result {
 	if err := cache.Get("auth_"+token, &res); err != nil {
 		return c.HandleBadRequestError("Session Timeout")
 	}
-	go cache.Set("auth_"+user.Token, user.Username, 30*time.Minute)
 	user := &models.User{}
 	if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
-		return c.HandleNotFoundError(err.Error())
+		return c.HandleNotFoundError("This token does not exist")
 	}
+	go cache.Set("auth_"+user.Token, user.Username, 30*time.Minute)
 	r := Response{user.Role}
 	return c.RenderJSON(r)
 }
