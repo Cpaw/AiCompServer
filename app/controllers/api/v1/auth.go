@@ -121,6 +121,9 @@ func CheckRole(c ApiV1Controller, AllowRole []string) revel.Result {
 	if token == "" {
 		return c.HandleNotFoundError("Not SignIn")
 	}
+	if err := CheckToken(c.ApiV1Controller); err != nil {
+		return err
+	}
 	user := &models.User{}
 	if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
 		return c.HandleNotFoundError("This token does not exist")
