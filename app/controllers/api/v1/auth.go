@@ -107,6 +107,12 @@ func (c ApiAuth) Role() revel.Result {
 	if token == "" {
 		return c.HandleNotFoundError("Not SignIn")
 	}
+	// Check Token Timeout
+	var res string
+	if err := cache.Get("auth_"+token, &res); err != nil {
+		return c.HandleBadRequestError("Session Timeout")
+	}
+	go cache.Set("auth_"+user.Token, user.Username, 30*time.Minute)
 	user := &models.User{}
 	if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
@@ -120,9 +126,6 @@ func CheckRole(c ApiV1Controller, AllowRole []string) revel.Result {
 	token := c.Request.Header.Get("Authorization")
 	if token == "" {
 		return c.HandleNotFoundError("Not SignIn")
-	}
-	if err := CheckToken(c.ApiV1Controller); err != nil {
-		return err
 	}
 	user := &models.User{}
 	if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
