@@ -145,7 +145,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 		return err
 	}
 	var fp *os.File
-	ansFile := "./correct_ans_"
+	ansFile := os.Getenv("ANSWERFILE")
 	ansFile = ansFile + strconv.Itoa(int(ChallengeID)) + ".txt"
 	fp, err := os.Open(ansFile)
 	if err != nil {
@@ -156,6 +156,8 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	b1 := scanner1.Scan()
 	b2 := scanner2.Scan()
 	acc := 0
+	a1 := map[string]string{}
+	a2 := map[string]string{}
 	for b1 && b2 {
 		st1 := scanner1.Text()
 		st2 := scanner2.Text()
@@ -164,9 +166,13 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 		l1 := strings.Split(st1, ",")
 		l2 := strings.Split(st2, ",")
 		if len(l1) > 1 && len(l2) > 1 {
-			a1 := strings.Replace(l1[1], " ", "", -1)
-			a2 := strings.Replace(l2[1], " ", "", -1)
-			if a1 == a2 {
+			a1[l1[0]] = strings.Replace(l1[1], " ", "", -1)
+			a2[l2[0]] = strings.Replace(l2[1], " ", "", -1)
+		}
+	}
+	for asKey, asVal := range a1 {
+		if aaVal, err := a2[asKey]; err == true {
+			if aaVal == asVal {
 				acc = acc + 1
 			}
 		}
