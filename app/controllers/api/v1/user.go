@@ -119,7 +119,7 @@ func (c ApiUser) Create() revel.Result {
 	if err := db.DB.Create(user).Error; err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
-	r := Response{ReseposeUser{user}}
+	r := Response{"Success"}
 	return c.RenderJSON(r)
 }
 
