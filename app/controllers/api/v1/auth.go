@@ -32,6 +32,8 @@ type ApiAuth struct {
 }
 
 func (c ApiAuth) GetSessionID() revel.Result {
+	a, _ := revel.Config.String("cache.hosts")
+	log.Print(a)
 	session := TokenGenerator(32)
 	go cache.Set("session_"+session, session, 2*time.Minute)
 	c.Response.Out.Header().Add("Authorization", session)
