@@ -197,28 +197,21 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 		answer.ChallengeID = ChallengeID
 		answer.UserID = user.ID
 		answer.Score = acc
-		if err := c.BindParams(answer); err != nil {
-			return c.HandleBadRequestError(err.Error())
-		}
-		token := c.Request.Header.Get("Authorization")
-		user := &models.User{}
-		if err := db.DB.Find(&user, models.User{Token: token}).Error; err != nil {
-			return c.HandleNotFoundError(err.Error())
-		}
 		if err := validator.Validate(answer); err != nil {
 			return c.HandleBadRequestError(err.Error())
 		}
 		if err := db.DB.Create(answer).Error; err != nil {
 			return c.HandleBadRequestError(err.Error())
 		}
+		r := Response{"Success Submit"}
+		return c.RenderJSON(r)
 	}
 	// そのユーザーがSubmitした問題のanswerを更新する
 	answerNew := &models.Answer{}
 	answerNew.ChallengeID = ChallengeID
 	answerNew.UserID = user.ID
-	answerNew.Score = acc
-	if err := c.BindParams(answerNew); err != nil {
-		return c.HandleBadRequestError(err.Error())
+	if answer.Score < acc {
+		answerNew.Score = acc
 	}
 	if err := validator.Validate(answerNew); err != nil {
 		return c.HandleBadRequestError(err.Error())
