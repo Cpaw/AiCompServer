@@ -153,12 +153,10 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	}
 	scanner1 := bufio.NewScanner(ansFP)
 	scanner2 := bufio.NewScanner(fp)
-	b1 := scanner1.Scan()
-	b2 := scanner2.Scan()
 	acc := 0
 	a1 := map[string]string{}
 	a2 := map[string]string{}
-	for b1 && b2 {
+	for scanner1.Scan() && scanner2.Scan() {
 		st1 := scanner1.Text()
 		st2 := scanner2.Text()
 		log.Println(st1)
