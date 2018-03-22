@@ -11,5 +11,5 @@ type Answer struct {
 	BaseModel
 	ChallengeID uint64
 	UserID      uint64
-	Score       int
+	Score       float64
 }

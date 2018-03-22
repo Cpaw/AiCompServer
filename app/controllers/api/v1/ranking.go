@@ -8,9 +8,9 @@ import (
 )
 
 type Rank struct {
-	Rank     int    `json:"rank"`
-	Username string `json:"username"`
-	Score    int    `json:"score"`
+	Rank     int     `json:"rank"`
+	Username string  `json:"username"`
+	Score    float64 `json:"score"`
 }
 
 type Ranks []Rank
@@ -33,7 +33,7 @@ func (c ApiChallenge) Ranking() revel.Result {
 		if user.Role == "admin" {
 			continue
 		}
-		score := 0
+		score := 0.0
 		if err := db.DB.Find(&answer, "user_id = ?", user.ID).Error; err != nil {
 			return c.HandleNotFoundError(err.Error())
 		}

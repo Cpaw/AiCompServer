@@ -25,7 +25,7 @@ type ResponseAnswers struct {
 }
 
 type ResponseAccuracy struct {
-	Accuracy int `json:"accuracy"`
+	Accuracy float64 `json:"accuracy"`
 }
 
 // Answer Index
@@ -157,7 +157,8 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	}
 	scanner1 := bufio.NewScanner(ansFP)
 	scanner2 := bufio.NewScanner(fp)
-	acc := 0
+	var acc float64
+	acc = 0
 	a1 := map[string]string{}
 	a2 := map[string]string{}
 	for scanner1.Scan() && scanner2.Scan() {
@@ -179,7 +180,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 			}
 		}
 	}
-	acc = acc / len(a1)
+	acc = acc / float64(len(a1)) * 100
 	if err := scanner1.Err(); err != nil {
 		return c.HandleBadRequestError("採点中に解答ファイルにエラーが起きました")
 	}
@@ -199,14 +200,14 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 		// なかった場合のCreate
 		answer.ChallengeID = ChallengeID
 		answer.UserID = user.ID
-		answer.Score = acc / len(a1)
+		answer.Score = acc
 		if err := validator.Validate(answer); err != nil {
 			return c.HandleBadRequestError(err.Error())
 		}
 		if err := db.DB.Create(answer).Error; err != nil {
 			return c.HandleBadRequestError(err.Error())
 		}
-		r := Response{ResponseAccuracy{acc / len(a1)}}
+		r := Response{ResponseAccuracy{acc}}
 		return c.RenderJSON(r)
 	}
 	// そのユーザーがSubmitした問題のanswerを更新する
