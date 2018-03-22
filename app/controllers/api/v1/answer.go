@@ -163,13 +163,11 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	for scanner1.Scan() && scanner2.Scan() {
 		st1 := scanner1.Text()
 		st2 := scanner2.Text()
-		log.Println(st1)
-		log.Println(st2)
 		l1 := strings.Split(st1, ",")
 		l2 := strings.Split(st2, ",")
 		if len(l1) > 1 && len(l2) > 1 {
-			a1[l1[0]] = strings.Replace(l1[1], " ", "", -1)
-			a2[l2[0]] = strings.Replace(l2[1], " ", "", -1)
+			a1[l1[0]] = l1[1]
+			a2[l2[0]] = l2[1]
 		}
 		log.Println(st1, l1)
 		log.Println(st2, l2)
@@ -200,14 +198,14 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 		// なかった場合のCreate
 		answer.ChallengeID = ChallengeID
 		answer.UserID = user.ID
-		answer.Score = acc
+		answer.Score = acc / len(a1)
 		if err := validator.Validate(answer); err != nil {
 			return c.HandleBadRequestError(err.Error())
 		}
 		if err := db.DB.Create(answer).Error; err != nil {
 			return c.HandleBadRequestError(err.Error())
 		}
-		r := Response{ResponseAccuracy{acc}}
+		r := Response{ResponseAccuracy{acc / len(a1)}}
 		return c.RenderJSON(r)
 	}
 	// そのユーザーがSubmitした問題のanswerを更新する
@@ -215,7 +213,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	answerNew.ChallengeID = ChallengeID
 	answerNew.UserID = user.ID
 	if answer.Score < acc {
-		answerNew.Score = acc
+		answerNew.Score = acc / len(a1)
 	}
 	if err := validator.Validate(answerNew); err != nil {
 		return c.HandleBadRequestError(err.Error())
@@ -223,6 +221,6 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	if err := db.DB.Model(&answer).Update(&answerNew).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
 	}
-	r := Response{ResponseAccuracy{answerNew.Score}}
+	r := Response{ResponseAccuracy{answerNew.Score / len(a1)}}
 	return c.RenderJSON(r)
 }
