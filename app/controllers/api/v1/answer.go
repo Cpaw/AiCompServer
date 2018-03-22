@@ -174,7 +174,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	for asKey, asVal := range a1 {
 		if aaVal, err := a2[asKey]; err == true {
 			if aaVal == asVal {
-				acc = acc + 1
+				acc = acc + 1.0
 			}
 		}
 	}
