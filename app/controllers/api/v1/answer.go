@@ -180,7 +180,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 			}
 		}
 	}
-	acc = acc / float64(len(a1)) * 100
+	acc = acc * 100.0 / float64(len(a1))
 	if err := scanner1.Err(); err != nil {
 		return c.HandleBadRequestError("採点中に解答ファイルにエラーが起きました")
 	}
