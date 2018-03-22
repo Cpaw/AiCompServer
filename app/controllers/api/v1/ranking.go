@@ -47,7 +47,7 @@ func (c ApiChallenge) Ranking() revel.Result {
 	TmpScore := 0
 	for Tindex, _ := range rank {
 		// スコアが前の人と一緒の時は前の人の順位と同じにする
-		if rank[Tindex].Score == tmpScore {
+		if rank[Tindex].Score == TmpScore {
 			rank[Tindex].Rank = Rindex
 			tmpScore = rank[Tindex].Score
 		} else {
