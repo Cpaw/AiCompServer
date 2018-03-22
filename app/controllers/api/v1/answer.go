@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"github.com/revel/revel"
 	"gopkg.in/validator.v2"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -179,7 +178,6 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 		}
 	}
 	acc = acc * 100.0 / float64(len(a2))
-	log.Println(acc)
 	if err := scanner1.Err(); err != nil {
 		return c.HandleBadRequestError("採点中に解答ファイルにエラーが起きました")
 	}

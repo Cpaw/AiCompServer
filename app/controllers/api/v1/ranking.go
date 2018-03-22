@@ -43,8 +43,17 @@ func (c ApiChallenge) Ranking() revel.Result {
 		rank = append(rank, Rank{Rank: 0, Username: user.Username, Score: score})
 	}
 	sort.Slice(rank, func(i, j int) bool { return rank[i].Score > rank[j].Score })
-	for index, _ := range rank {
-		rank[index].Rank = index + 1
+	Rindex := 1
+	TmpScore := 0
+	for Tindex, _ := range rank {
+		// スコアが前の人と一緒の時は前の人の順位と同じにする
+		if rank[Tindex].Score == tmpScore {
+			rank[Tindex].Rank = Rindex
+			tmpScore = rank[Tindex].Score
+		} else {
+			rank[Tindex].Rank = Tindex + 1
+			Rindex = Tindex
+		}
 	}
 	r := Response{ResponseRanking{rank}}
 	return c.RenderJSON(r)

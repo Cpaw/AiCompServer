@@ -36,7 +36,6 @@ func (c ApiAuth) GetSessionID() revel.Result {
 	go cache.Set("session_"+session, session, 2*time.Minute)
 	c.Response.Out.Header().Add("Authorization", session)
 	r := Response{"Get Session ID"}
-	log.Print("&&", session, "&&")
 	return c.RenderJSON(r)
 }
 
@@ -45,7 +44,6 @@ func (c ApiAuth) SignIn() revel.Result {
 	if session == "" {
 		return c.HandleNotFoundError("Retry Session")
 	}
-	log.Print("&&", session, "&&")
 	var res string
 	if err := cache.Get("session_"+session, &res); err != nil {
 		return c.HandleBadRequestError("Session Timeout")
@@ -56,7 +54,6 @@ func (c ApiAuth) SignIn() revel.Result {
 	if err := c.BindParams(jsonData); err != nil {
 		return c.HandleBadRequestError(err.Error())
 	}
-	log.Print(jsonData.Password)
 	salt := []byte("yatuhashi")
 	converted, _ := scrypt.Key([]byte(jsonData.Password), salt, 16384, 8, 1, 32)
 	password := hex.EncodeToString(converted[:])
