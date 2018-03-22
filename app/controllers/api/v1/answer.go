@@ -149,7 +149,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	ansFile = ansFile + strconv.Itoa(int(ChallengeID)) + ".csv"
 	fp, err := os.Open(ansFile)
 	if err != nil {
-		return c.HandleBadRequestError(err.Error())
+		return c.HandleBadRequestError("送信されたファイルが開けませんでした")
 	}
 	scanner1 := bufio.NewScanner(ansFP)
 	scanner2 := bufio.NewScanner(fp)
@@ -178,10 +178,10 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 		}
 	}
 	if err := scanner1.Err(); err != nil {
-		return c.HandleBadRequestError(err.Error())
+		return c.HandleBadRequestError("採点中に解答ファイルにエラーが起きました")
 	}
 	if err := scanner2.Err(); err != nil {
-		return c.HandleBadRequestError(err.Error())
+		return c.HandleBadRequestError("採点中に正解ファイルにエラーが起きました")
 	}
 	// Submitしたユーザーを特定する
 	token := c.Request.Header.Get("Authorization")
