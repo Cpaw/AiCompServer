@@ -158,7 +158,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	scanner1 := bufio.NewScanner(ansFP)
 	scanner2 := bufio.NewScanner(fp)
 	var acc float64
-	acc = 0
+	acc = 0.0
 	a1 := map[string]string{}
 	a2 := map[string]string{}
 	for scanner1.Scan() && scanner2.Scan() {
@@ -170,8 +170,6 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 			a1[l1[0]] = l1[1]
 			a2[l2[0]] = l2[1]
 		}
-		log.Println(st1, l1)
-		log.Println(st2, l2)
 	}
 	for asKey, asVal := range a1 {
 		if aaVal, err := a2[asKey]; err == true {
@@ -181,6 +179,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 		}
 	}
 	acc = acc * 100.0 / float64(len(a2))
+	log.Println(acc)
 	if err := scanner1.Err(); err != nil {
 		return c.HandleBadRequestError("採点中に解答ファイルにエラーが起きました")
 	}
