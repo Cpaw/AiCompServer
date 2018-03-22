@@ -169,6 +169,8 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 			a1[l1[0]] = strings.Replace(l1[1], " ", "", -1)
 			a2[l2[0]] = strings.Replace(l2[1], " ", "", -1)
 		}
+		log.Println(st1, l1)
+		log.Println(st2, l2)
 	}
 	for asKey, asVal := range a1 {
 		if aaVal, err := a2[asKey]; err == true {
