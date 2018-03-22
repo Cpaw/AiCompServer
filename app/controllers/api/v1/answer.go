@@ -216,6 +216,8 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	answerNew.UserID = user.ID
 	if answer.Score < acc {
 		answerNew.Score = acc
+	} else {
+		answerNew.Score = answer.Score
 	}
 	if err := validator.Validate(answerNew); err != nil {
 		return c.HandleBadRequestError(err.Error())
