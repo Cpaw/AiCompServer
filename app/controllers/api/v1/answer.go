@@ -179,6 +179,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 			}
 		}
 	}
+	acc = acc / len(a1)
 	if err := scanner1.Err(); err != nil {
 		return c.HandleBadRequestError("採点中に解答ファイルにエラーが起きました")
 	}
@@ -213,7 +214,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	answerNew.ChallengeID = ChallengeID
 	answerNew.UserID = user.ID
 	if answer.Score < acc {
-		answerNew.Score = acc / len(a1)
+		answerNew.Score = acc
 	}
 	if err := validator.Validate(answerNew); err != nil {
 		return c.HandleBadRequestError(err.Error())
@@ -221,6 +222,6 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	if err := db.DB.Model(&answer).Update(&answerNew).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
 	}
-	r := Response{ResponseAccuracy{answerNew.Score / len(a1)}}
+	r := Response{ResponseAccuracy{answerNew.Score}}
 	return c.RenderJSON(r)
 }
