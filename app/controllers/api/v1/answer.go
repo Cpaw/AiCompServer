@@ -146,7 +146,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	}
 	var fp *os.File
 	ansFile := os.Getenv("ANSWERFILE")
-	ansFile = ansFile + strconv.Itoa(int(ChallengeID)) + ".txt"
+	ansFile = ansFile + strconv.Itoa(int(ChallengeID)) + ".csv"
 	fp, err := os.Open(ansFile)
 	if err != nil {
 		return c.HandleBadRequestError(err.Error())
