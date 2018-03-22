@@ -24,6 +24,10 @@ type ResponseAnswers struct {
 	Answers []models.Answer `json:"answers"`
 }
 
+type ResponseAccuracy struct {
+	Accuracy int `json:"accuracy"`
+}
+
 // Answer Index
 func (c ApiAnswer) Index() revel.Result {
 	if err := CheckToken(c.ApiV1Controller); err != nil {
@@ -203,7 +207,7 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 		if err := db.DB.Create(answer).Error; err != nil {
 			return c.HandleBadRequestError(err.Error())
 		}
-		r := Response{"Success Submit"}
+		r := Response{ResponseAccuracy{acc}}
 		return c.RenderJSON(r)
 	}
 	// そのユーザーがSubmitした問題のanswerを更新する
@@ -219,6 +223,6 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	if err := db.DB.Model(&answer).Update(&answerNew).Error; err != nil {
 		return c.HandleNotFoundError(err.Error())
 	}
-	r := Response{"Success Submit"}
+	r := Response{ResponseAccuracy{answerNew.Score}}
 	return c.RenderJSON(r)
 }
