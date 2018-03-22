@@ -44,12 +44,12 @@ func (c ApiChallenge) Ranking() revel.Result {
 	}
 	sort.Slice(rank, func(i, j int) bool { return rank[i].Score > rank[j].Score })
 	Rindex := 1
-	TmpScore := 0
+	TmpScore := 0.0
 	for Tindex, _ := range rank {
 		// スコアが前の人と一緒の時は前の人の順位と同じにする
 		if rank[Tindex].Score == TmpScore {
 			rank[Tindex].Rank = Rindex
-			tmpScore = rank[Tindex].Score
+			TmpScore = rank[Tindex].Score
 		} else {
 			rank[Tindex].Rank = Tindex + 1
 			Rindex = Tindex
