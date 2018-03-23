@@ -53,6 +53,7 @@ func (c ApiChallenge) Ranking() revel.Result {
 		} else {
 			rank[Tindex].Rank = Tindex + 1
 			Rindex = Tindex + 2
+			TmpScore = rank[Tindex].Score
 		}
 	}
 	r := Response{ResponseRanking{rank}}
