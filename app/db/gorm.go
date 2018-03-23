@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+var DB *gorm.DB
+
 func InitDB() {
 	dbhost := os.Getenv("DBHOST")
 	// dbname := os.Getenv("DBNAME")
@@ -23,6 +25,7 @@ func InitDB() {
 			db.AutoMigrate(&models.User{})
 			db.AutoMigrate(&models.Challenge{})
 			db.AutoMigrate(&models.Answer{})
+			DB = db
 			break
 		}
 		time.Sleep(1 * time.Second)
