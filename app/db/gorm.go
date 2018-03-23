@@ -15,7 +15,7 @@ func InitDB() {
 	// dbuser := os.Getenv("DBUSER")
 	// dbpass := os.Getenv("DBPASSWORD")
 	for {
-		db, err = gorm.Open("postgres", "host="+dbhost+" port=5432 user=gorm dbname=gorm sslmode=disable password=yatuhashi-api")
+		db, err := gorm.Open("postgres", "host="+dbhost+" port=5432 user=gorm dbname=gorm sslmode=disable password=yatuhashi-api")
 		if err != nil {
 			log.Println("Failed to connect to database: %v\n", err)
 		} else {
