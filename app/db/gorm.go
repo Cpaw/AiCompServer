@@ -28,7 +28,7 @@ func InitDB() {
 			break
 		}
 		time.Sleep(1 * time.Second)
-		db, err := gorm.Open("postgres", "host="+dbhost+" port=5432 user=gorm dbname=gorm sslmode=disable password=yatuhashi-api")
+		db, err = gorm.Open("postgres", "host="+dbhost+" port=5432 user=gorm dbname=gorm sslmode=disable password=yatuhashi-api")
 	}
 
 	db.DB()
