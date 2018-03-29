@@ -1,14 +1,15 @@
 # Ai Competion Server
 
+Thie System uses revel
 A high-productivity web framework for the [Go language](http://www.golang.org/).
 
-### Start the web server:
+### Start the server:
 
-   revel run 
- 
-### Build
-
-   revel package AiCompServer
+```
+git clone https://github.com/Cpaw/AiComp.git
+cd AiComp
+docker-compose up -d
+```
 
 ### This is Score Server System
 
@@ -46,37 +47,38 @@ A high-productivity web framework for the [Go language](http://www.golang.org/).
 ### API LIST:
 
 ```
+METHOD  URL                                     Function                      Allow Role
 // AiCompServer/app/controllers/api/v1/user.go
-GET     /api/v1/user                            ApiUser.Index
-GET     /api/v1/user/:id                        ApiUser.Show
-PUT     /api/v1/user/:id                        ApiUser.Update
-DELETE  /api/v1/user/:id                        ApiUser.Delete
+GET     /api/v1/user                            ApiUser.Index                 Admin
+GET     /api/v1/user/:id                        ApiUser.Show                  Admin, Signed in User
+PUT     /api/v1/user/:id                        ApiUser.Update                Admin, Signed in User
+DELETE  /api/v1/user/:id                        ApiUser.Delete                Admin, Signed in User
 
-POST    /api/v1/signup                          ApiUser.Create
+POST    /api/v1/signup                          ApiUser.Create                Everyone
 // AiCompServer/app/controllers/api/v1/auth.go
-GET     /api/v1/signin                          ApiAuth.GetSessionID
-POST    /api/v1/signin                          ApiAuth.SignIn
-DELETE  /api/v1/signin                          ApiAuth.SignOut
-GET     /api/v1/role                            ApiAuth.Role
+GET     /api/v1/signin                          ApiAuth.GetSessionID          Everyone
+POST    /api/v1/signin                          ApiAuth.SignIn                Everyone
+DELETE  /api/v1/signin                          ApiAuth.SignOut               Signed in
+GET     /api/v1/role                            ApiAuth.Role                  Everyone
 
 // AiCompServer/app/controllers/api/v1/ranking.go
-GET    /api/v1/ranking                          ApiChallenge.Ranking
+GET    /api/v1/ranking                          ApiChallenge.Ranking          Signed in
 
 // AiCompServer/app/controllers/api/v1/challenge.go
-GET    /api/v1/challenges                       ApiChallenge.Index
-POST   /api/v1/challenges                       ApiChallenge.Create
-GET    /api/v1/challenges/:id                   ApiChallenge.Show
-PUT    /api/v1/challenges/:id                   ApiChallenge.Update
-DELETE /api/v1/challenges/:id                   ApiChallenge.Delete
+GET    /api/v1/challenges                       ApiChallenge.Index            Signed in
+POST   /api/v1/challenges                       ApiChallenge.Create           Admin
+GET    /api/v1/challenges/:id                   ApiChallenge.Show             Signed in
+PUT    /api/v1/challenges/:id                   ApiChallenge.Update           Admin
+DELETE /api/v1/challenges/:id                   ApiChallenge.Delete           Admin
 
 // AiCompServer/app/controllers/api/v1/answer.go
-GET    /api/v1/answers                          ApiAnswer.Index
-POST   /api/v1/answers                          ApiAnswer.Create
-GET    /api/v1/answers/:id                      ApiAnswer.Show
-PUT    /api/v1/answers/:id                      ApiAnswer.Update
-DELETE /api/v1/answers/:id                      ApiAnswer.Delete
+GET    /api/v1/answers                          ApiAnswer.Index               Admin
+POST   /api/v1/answers                          ApiAnswer.Create              Admin
+GET    /api/v1/answers/:id                      ApiAnswer.Show                Admin
+PUT    /api/v1/answers/:id                      ApiAnswer.Update              Admin
+DELETE /api/v1/answers/:id                      ApiAnswer.Delete              Admin
 
-GET     /api/v1/challengeanswer/:id             ApiAnswer.UserChallengeAnswer
+GET     /api/v1/challengeanswer/:id             ApiAnswer.UserChallengeAnswer Signed in User
 
-POST   /api/v1/submit                           ApiAnswer.Submit
+POST   /api/v1/submit                           ApiAnswer.Submit              Signed in
 ```
