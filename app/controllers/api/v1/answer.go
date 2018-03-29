@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type ApiAnswer struct {
@@ -210,6 +211,10 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 		}
 		r := Response{ResponseAccuracy{acc}}
 		return c.RenderJSON(r)
+	}
+	// 前回の更新から1分たっているか確認する(解答の解析を出来なくするため
+	if time.Since(answer.UpdatedAt) < time.Minute*1 {
+		return c.HandleBadRequestError("前回のSubmitから1分が経過していません。")
 	}
 	// そのユーザーがSubmitした問題のanswerを更新する
 	answerNew := &models.Answer{}
