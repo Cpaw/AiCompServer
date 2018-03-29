@@ -2,7 +2,6 @@
 
 A high-productivity web framework for the [Go language](http://www.golang.org/).
 
-
 ### Start the web server:
 
    revel run 
@@ -11,7 +10,7 @@ A high-productivity web framework for the [Go language](http://www.golang.org/).
 
    revel package AiCompServer
 
-### This is Base System
+### This is Score Server System
 
 ```
 .
@@ -44,7 +43,7 @@ A high-productivity web framework for the [Go language](http://www.golang.org/).
 
 
 
-### Go to http://localhost:9000/ and you'll see:
+### API LIST:
 
 ```
 // AiCompServer/app/controllers/api/v1/user.go
