@@ -160,13 +160,17 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 	acc = 0.0
 	a1 := map[string]string{}
 	a2 := map[string]string{}
-	for scanner1.Scan() && scanner2.Scan() {
+	for scanner1.Scan() {
 		st1 := scanner1.Text()
-		st2 := scanner2.Text()
 		l1 := strings.Split(st1, ",")
-		l2 := strings.Split(st2, ",")
-		if len(l1) > 1 && len(l2) > 1 {
+		if len(l1) > 1 {
 			a1[l1[0]] = l1[1]
+		}
+	}
+	for scanner2.Scan() {
+		st2 := scanner2.Text()
+		l2 := strings.Split(st2, ",")
+		if len(l2) > 1 {
 			a2[l2[0]] = l2[1]
 		}
 	}
