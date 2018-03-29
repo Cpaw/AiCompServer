@@ -55,6 +55,7 @@ func (c ApiChallenge) Ranking() revel.Result {
 			Rindex = Tindex + 1
 			TmpScore = rank[Tindex].Score
 		}
+		rank[Tindex].Score = float64(int((rank[Tindex].Score*1000)+0.5)) / 1000
 	}
 	r := Response{ResponseRanking{rank}}
 	return c.RenderJSON(r)
