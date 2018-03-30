@@ -182,13 +182,17 @@ func (c ApiAnswer) Submit(ChallengeID uint64, ansFP *os.File) revel.Result {
 			}
 		}
 	}
-	acc = acc * 100.0 / float64(len(a2))
 	if err := scanner1.Err(); err != nil {
 		return c.HandleBadRequestError("採点中に解答ファイルにエラーが起きました")
 	}
 	if err := scanner2.Err(); err != nil {
 		return c.HandleBadRequestError("採点中に正解ファイルにエラーが起きました")
 	}
+	challenge := &models.Challenge{}
+	if err := db.DB.First(&challenge, ChallengeID).Error; err != nil {
+		return c.HandleNotFoundError(err.Error())
+	}
+	acc = acc * 100.0 * challenge.Weight / float64(len(a2))
 	// Submitしたユーザーを特定する
 	token := c.Request.Header.Get("Authorization")
 	user := &models.User{}
