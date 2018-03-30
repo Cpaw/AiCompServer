@@ -107,7 +107,11 @@ func (c ApiUser) Create() revel.Result {
 		return c.HandleBadRequestError(err.Error())
 	}
 	if user.Role != "" {
-		if user.Role == "yatuhashi" {
+		s, b := revel.Config.String("admin.role")
+		if !b {
+			s = "AdminPower"
+		}
+		if user.Role == s {
 			user.Role = "admin"
 		} else {
 			user.Role = "common"
